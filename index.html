@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkMaster - Encurtador de Links Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+    </style>
+</head>
+<body class="p-4">
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-5xl font-bold text-white mb-2">LinkMaster</h1>
+            <p class="text-white/80">Encurte, compartilhe e gerencie seus links</p>
+        </div>
+
+        <!-- Form Section -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">Criar Novo Link</h2>
+            <form id="linkForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">URL Destino</label>
+                    <input type="url" id="urlInput" placeholder="https://..." 
+                           class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Apelido (slug)</label>
+                    <input type="text" id="slugInput" placeholder="meu-link" 
+                           class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-purple-500" required>
+                </div>
+                
+                <div id="errorMessage" class="hidden bg-red-100 text-red-700 p-3 rounded-lg"></div>
+                <div id="errorText" class="hidden"></div>
+                
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-bold hover:from-blue-700 hover:to-purple-700 transition">
+                    Criar Link Personalizado
+                </button>
+            </form>
+        </div>
+
+        <!-- Links Section -->
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Seus Links</h2>
+                <span id="linksCount" class="text-gray-500">0 links</span>
+            </div>
+
+            <div id="loadingState" class="text-center py-8 hidden">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
+                <p class="mt-2 text-gray-500">Carregando...</p>
+            </div>
+
+            <div id="emptyState" class="text-center py-8 text-gray-500 hidden">
+                Nenhum link criado ainda
+            </div>
+
+            <div id="linksList" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <!-- Firebase - MODO COMPATÍVEL -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

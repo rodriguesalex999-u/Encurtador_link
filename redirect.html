@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecionando...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+            color: white;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        a {
+            color: white;
+            text-decoration: underline;
+            margin-top: 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="spinner"></div>
+        <h1>Redirecionando...</h1>
+        <p>Aguarde um momento</p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Configuração Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAW5H3ig6CAcQvu172Vs_vofENAxno0dUw",
+            authDomain: "rastreamento-link.firebaseapp.com",
+            projectId: "rastreamento-link",
+            storageBucket: "rastreamento-link.firebasestorage.app",
+            messagingSenderId: "523190695978",
+            appId: "1:523190695978:web:6da253d22a693c16b36b53"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        // Pegar slug da URL
+        let slug = window.location.pathname.substring(1);
+        
+        // Remover barra no final se existir
+        if (slug.endsWith('/')) {
+            slug = slug.slice(0, -1);
+        }
+
+        console.log('🔍 Slug:', slug);
+        
+        const container = document.getElementById('container');
+
+        async function redirect() {
+            try {
+                if (!slug) {
+                    window.location.href = '/';
+                    return;
+                }
+
+                const snapshot = await db.collection('links').where('slug', '==', slug).get();
+                
+                if (snapshot.empty) {
+                    container.innerHTML = `
+                        <h1>404 - Link não encontrado</h1>
+                        <p>O link "${slug}" não existe</p>
+                        <a href="/">Voltar para Home</a>
+                    `;
+                    return;
+                }
+
+                const doc = snapshot.docs[0];
+                const link = doc.data();
+                
+                // Incrementar cliques
+                await db.collection('links').doc(doc.id).update({
+                    cliques: firebase.firestore.FieldValue.increment(1)
+                });
+                
+                console.log('✅ Redirecionando para:', link.url_original);
+                
+                // Redirecionar
+                window.location.href = link.url_original;
+                
+            } catch (error) {
+                console.error('❌ Erro:', error);
+                container.innerHTML = `
+                    <h1>Erro ao redirecionar</h1>
+                    <p>${error.message}</p>
+                    <a href="/">Voltar para Home</a>
+                `;
+            }
+        }
+
+        // Executar redirecionamento
+        redirect();
+    </script>
+</body>
+</html>
